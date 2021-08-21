@@ -90,8 +90,6 @@ class BimContainerElement {
         this.nuid = data.nuid;
         this.nid = data.nid;
         this.id = data.id;
-        // this.pvs = new ElementParameterValueStructure(data.pvs);
-        // console.log(data.pvs);
         this.pvs_map = data.pvs.pv.reduce((acc: TElementParameterValueStructure, curr) => {
             acc[curr["#text"]] = curr;
             return acc;

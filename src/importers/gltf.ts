@@ -18,11 +18,11 @@ export default class GLTFImporter {
     constructor(bimData: Bim) {
         this.bimData = bimData;
     }
-    get meshes() {
-        return this.bimData.Container.es.e
-            .filter((e) => e)
-            .flatMap((e) => e.ms.m)
-    }
+    // get meshes() {
+    //     return this.bimData.Container.es.e
+    //         .filter((e) => e)
+    //         .flatMap((e) => e.ms.m)
+    // }
     private rollDownMeshes() {
         this.bimData.Container.es.e.forEach((e) => {
             if (e.ms.m) {
@@ -32,7 +32,7 @@ export default class GLTFImporter {
             }
         })
     }
-    private toColor(num: number) {
+    static toColor(num: number) {
         num >>>= 0;
         const b = num & 0xFF,
             g = (num & 0xFF00) >>> 8,
@@ -57,12 +57,11 @@ export default class GLTFImporter {
             for (let i = 0; i < element.ms.m.length; i++) {
                 const sMesh = element.ms.m[i];
                 const node = doc.createNode();
-                node.setExtras({...element.pvs_map, ...{
+                node.setExtras({
                         'element_id': element.id
-                }
                 });
                 const mesh = doc.createMesh();
-                const color = this.toColor(Number.parseInt(sMesh.c));
+                const color = GLTFImporter.toColor(Number.parseInt(sMesh.c));
                 const material = doc.createMaterial('material')
                     .setBaseColorHex(color.hex)
                     .setAlpha(color.alpha)
