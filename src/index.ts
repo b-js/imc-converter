@@ -1,8 +1,8 @@
-import Parser from "./lib/Parse";
 import * as fs from 'fs';
-import GLTFImporter from "./importers/gltf";
-import {Bim} from "./models/Imc";
 
+import {Bim} from "./models/Imc";
+import GLTFImporter from "./importers/gltf-from-base";
+import Parser from "./lib/Parse";
 
 const __input_dir = './files/input/';
 const __output_dir = './files/output/';
