@@ -90,8 +90,7 @@ export class BimContainerElement {
         this.nuid = data.nuid;
         this.nid = data.nid;
         this.id = data.id;
-        // this.pvs = new ElementParameterValueStructure(data.pvs);
-        // console.log(data.pvs);
+  
         // this.pvs_map = data.pvs.pv.reduce((acc: TElementParameterValueStructure, curr) => {
         //     acc[curr["#text"]] = curr;
         //     return acc;
@@ -99,8 +98,12 @@ export class BimContainerElement {
         this.pvs_map = data.pvs_map;
         if (data.ms && data.ms.m?.length) {             //@ts-ignore
             this.ms.m = data.ms.m.map((ms) => new ElementMesh({...ms, ts: [], vs: []}));
+    
+        if (data.ms && data.ms.m?.length) {
+            this.ms.m = data.ms.m.map((ms) => new ElementMesh(ms));
         }
     }
+}
     get nativeUniqueId() {
         return this.nuid;
     }
