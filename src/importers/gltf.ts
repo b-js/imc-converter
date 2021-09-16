@@ -1,6 +1,9 @@
+import {Document, NodeIO, vec4} from '@gltf-transform/core';
+import { MeshEntity, NodeEntity } from '../db-2/class-to-Db';
+import {writeJSONSync, writeJsonSync} from 'fs-extra'
+
 import { Bim } from "../models/Imc";
 import * as draco3d from 'draco3dgltf';
-import { Document, Extension, NodeIO, Transform } from '@gltf-transform/core';
 import {MeshoptCompression, MeshQuantization} from '@gltf-transform/extensions';
 import { quantize, reorder } from '@gltf-transform/functions';
 import { MeshoptDecoder, MeshoptEncoder } from 'meshoptimizer';
@@ -10,6 +13,7 @@ import { writeJson } from 'fs-extra';
 import cliProgress from 'cli-progress';
 import {meshopt} from "@gltf-transform/functions/dist/meshopt";
 import {compress} from "../lib/Compress";
+
 const b1 = new cliProgress.SingleBar({
     format: 'Converting meshes | {bar} | {percentage}% || {value}/{total} Chunks ||',
     barCompleteChar: '\u2588',
@@ -56,7 +60,6 @@ export default class GLTFImporter {
     }
     async execute() {
         if (!this.bimData) throw Error('Bim data is undefined');
-        // writeJson('test.json', this.bimData.Container.es.e, { spaces: 1 });
         this.rollDownMeshes();
 
         const doc = new Document();
@@ -66,19 +69,14 @@ export default class GLTFImporter {
         const elements = this.bimData.Container.es.e.filter((e) => e.ms.m && e.ms.m.length !== 0);
         b1.start(elements.length, 0);
         for (let j = 0; j < elements.length; j++) {
-            // console.log(j + ' / ' + elements.length);
             const element = elements[j];
-            // if (!element.ms.m) continue;
             if (test) {
-                // if (!element.ms.m.length) continue;
                 let mesh = doc.createMesh(element.id);
-                // mesh.setName(element.id);
                 let node = doc.createNode(element.id);
                 node.setExtras({
-                    // ...element.pvs_map,
                     element_id: element.id,
                 });
-                // mesh.setExtras({ element_id: element.id });
+                mesh.setExtras({ element_id: element.id });
                 for (let i = 0; i < element.ms.m.length; i++) {
                     let sPrim = element.ms.m[i];
                     const position = doc
@@ -133,7 +131,6 @@ export default class GLTFImporter {
                         // elementIdsAccessor.setArray(new Float32Array(element_ids));
                         // primitive.setAttribute('ELEMENT_ID', elementIdsAccessor);
                     }
-                    // primitive.setMaterial(material);
                     mesh.addPrimitive(primitive);
                 }
                 node.setMesh(mesh);
@@ -208,38 +205,9 @@ export default class GLTFImporter {
             b1.increment();
         }
         b1.stop();
-        console.log('here');
-        // await MeshoptEncoder.ready;
-        // doc.getRoot().listMeshes().forEach((mesh) => {
-        //     MeshoptEncoder.
-        // })
-        // doc.createExtension(MeshQuantization).setRequired(true);
         const io = new NodeIO();
-        //     .registerExtensions([/*DracoMeshCompression,*/ MeshoptCompression])
-        //     .registerDependencies({
-        //         // 'draco3d.decoder': await draco3d.createDecoderModule(), // Optional.
-        //         // 'draco3d.encoder': await draco3d.createEncoderModule(), // Optional.
-        //         'meshopt.decoder': MeshoptDecoder,
-        //         'meshopt.encoder': MeshoptEncoder,
-        //     });
-        // await doc.transform(
-        //     reorder({ encoder: MeshoptEncoder }),
-        // );
-        // doc.createExtension(MeshoptCompression)
-        //     .setRequired(true)
-        //     .setEncoderOptions({ method: MeshoptCompression.EncoderMethod.FILTER });
-        // io.write('compressed-high.glb', doc);
-        // await doc.transform(reorder({encoder: MeshoptEncoder}), quantize({
-        //     pattern: /^(POSITION)(_\d+)?$/,
-        // }));
-        // await doc.transform(reorder({encoder: MeshoptEncoder}), );
-        // doc.createExtension(MeshoptCompression)
-        //     .setRequired(true)
-        //     .setEncoderOptions({
-        //         method: MeshoptCompression.EncoderMethod.QUANTIZE
-        //     });
-        // doc.createExtension(DracoMeshCompression);
-        // writeJson('test.json', io.writeJSON(doc), { spaces: 1 });
         return io.writeBinary(doc);
     }
 }
+
+

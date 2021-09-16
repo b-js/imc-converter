@@ -14,16 +14,20 @@
   "devDependencies": {
     "@types/cli-progress": "^3.9.2",
     "@types/fs-extra": "^9.0.12",
+    "@types/draco3dgltf": "^1.4.0",
     "@types/node": "^16.4.13",
     "nodemon": "^2.0.12",
     "ts-node": "^10.2.0",
     "typescript": "^4.3.5"
   },
   "dependencies": {
+
     "@gltf-transform/core": "^0.12.11",
     "@gltf-transform/extensions": "^0.12.11",
     "@gltf-transform/functions": "^0.12.11",
     "@types/draco3dgltf": "^1.4.0",
+    "@types/fs-extra": "^9.0.12",
+    "@types/uuid": "^8.3.1",
     "cli-progress": "^3.9.0",
     "draco3dgltf": "^1.4.1",
     "fast-xml-parser": "^3.19.0",
@@ -32,6 +36,8 @@
     "gltf-pipeline": "^3.0.4",
     "gltfpack": "^0.16.0",
     "he": "^1.2.0",
-    "meshoptimizer": "^0.16.1"
+    "meshoptimizer": "^0.16.1",
+    "pg": "^8.7.1",
+    "uuid": "^8.3.2"
   }
 }

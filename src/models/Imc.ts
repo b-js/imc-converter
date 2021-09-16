@@ -28,7 +28,7 @@ class ElementParameterValueStructure {
         this.pv = data.pv.map((pv) => new ElementParameterValue(pv))
     }
 }
-class ElementMesh {
+export class ElementMesh {
     private _rollSeparators = ['#',';'];
     c!: string; // MaterialColor
     vs!: Vertex[]; // Vertexes
@@ -79,7 +79,7 @@ class ElementMesh {
         }
     }
 }
-class BimContainerElement {
+export class BimContainerElement {
     nuid!: string; //NativeUniqueId
     nid!: string; //NativeId
     id!: string;
@@ -91,10 +91,16 @@ class BimContainerElement {
         this.nid = data.nid;
         this.id = data.id;
         this.pvs = data.pvs;
-        if (data.ms && data.ms.m?.length) {
-            this.ms.m = data.ms.m.map((ms) => new ElementMesh(ms));
+
+        // this.pvs_map = data.pvs.pv.reduce((acc: TElementParameterValueStructure, curr) => {
+        //     acc[curr["#text"]] = curr;
+        //     return acc;
+        // }, {})
+        // this.pvs_map = data.pvs_map;
+        if (data.ms && data.ms.m?.length) {             //@ts-ignore
+            this.ms.m = data.ms.m.map((ms) => new ElementMesh({...ms, ts: [], vs: []}));
         }
-    }
+}
     get nativeUniqueId() {
         return this.nuid;
     }
