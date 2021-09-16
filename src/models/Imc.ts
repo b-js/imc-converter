@@ -84,16 +84,13 @@ class BimContainerElement {
     nid!: string; //NativeId
     id!: string;
     pvs!: ElementParameterValueStructure;
-    pvs_map!: TElementParameterValueStructure;
+    // pvs_map!: TElementParameterValueStructure;
     ms: { m: ElementMesh[] } = { m: [] };
     constructor(data: BimContainerElement) {
         this.nuid = data.nuid;
         this.nid = data.nid;
         this.id = data.id;
-        this.pvs_map = data.pvs.pv.reduce((acc: TElementParameterValueStructure, curr) => {
-            acc[curr["#text"]] = curr;
-            return acc;
-        }, {})
+        this.pvs = data.pvs;
         if (data.ms && data.ms.m?.length) {
             this.ms.m = data.ms.m.map((ms) => new ElementMesh(ms));
         }
@@ -139,14 +136,14 @@ class ParameterDefinition {
 }
 class BimContainer {
     UniqueId!: string;
-    pds!: {
-        pd: ParameterDefinition[],
-    }
-    es!: {
-        e: BimContainerElement[];
-    }
+    pds = {
+        pd:[] as  ParameterDefinition[],
+    };
+    es = {
+        e:[] as BimContainerElement[],
+    };
     constructor(data: BimContainer) {
-        Object.assign(this, data);
+        this.UniqueId = data.UniqueId;
         this.es.e = data.es.e.map((e) => new BimContainerElement(e))
         this.pds.pd = data.pds.pd.map((pd) => new ParameterDefinition(pd))
     }
