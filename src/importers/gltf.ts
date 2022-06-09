@@ -1,18 +1,9 @@
-import {Document, NodeIO, vec4} from '@gltf-transform/core';
-import { MeshEntity, NodeEntity } from '../db-2/class-to-Db';
-import {writeJSONSync, writeJsonSync} from 'fs-extra'
+import {Document, NodeIO} from '@gltf-transform/core';
+
 
 import { Bim } from "../models/Imc";
-import * as draco3d from 'draco3dgltf';
-import {MeshoptCompression, MeshQuantization} from '@gltf-transform/extensions';
-import { quantize, reorder } from '@gltf-transform/functions';
-import { MeshoptDecoder, MeshoptEncoder } from 'meshoptimizer';
-import { DracoMeshCompression } from '@gltf-transform/extensions';
-import { writeJson } from 'fs-extra';
 
 import cliProgress from 'cli-progress';
-import {meshopt} from "@gltf-transform/functions/dist/meshopt";
-import {compress} from "../lib/Compress";
 
 const b1 = new cliProgress.SingleBar({
     format: 'Converting meshes | {bar} | {percentage}% || {value}/{total} Chunks ||',
@@ -66,11 +57,19 @@ export default class GLTFImporter {
         const buffer = doc.createBuffer();
              const scene = doc.createScene();
              const test = true;
-        const elements = this.bimData.Container.es.e.filter((e) => e.ms.m && e.ms.m.length !== 0);
+        const elements = this.bimData.Container.es.e;
         b1.start(elements.length, 0);
         for (let j = 0; j < elements.length; j++) {
             const element = elements[j];
+            if (!element.ms.m) {
+                b1.increment();
+                continue;
+            }
             if (test) {
+                if (!element.ms.m.length) {
+                    b1.increment();
+                    continue;
+                }
                 let mesh = doc.createMesh(element.id);
                 let node = doc.createNode(element.id);
                 node.setExtras({
@@ -102,11 +101,16 @@ export default class GLTFImporter {
                         const colors = [];
                         const colorAccessor = doc
                             .createAccessor()
+                            // .setNormalized(true)
                             .setType('VEC4')
+                            // .setArray(new Float32Array(positionArr.length))
                             .setBuffer(buffer);
                         const rgba = this.toRGBAColor(Number.parseInt(sPrim.c));
                         for (let i = 0; i < position.getCount(); i++) {
-                            colors.push(rgba[0], rgba[1], rgba[2], rgba[3]);
+                            // console.log(i, rgba);
+                            // colorAccessor.setElement(i, rgba);
+                            // console.log(rgba[3] / 255);
+                            colors.push(rgba[0], rgba[1], rgba[2], rgba[3] / 255);
                         }
                         colorAccessor.setArray(new Float32Array(colors));
                         primitive.setAttribute('COLOR', colorAccessor);
@@ -139,6 +143,7 @@ export default class GLTFImporter {
                 for (let i = 0; i < element.ms.m.length; i++) {
                     const sMesh = element.ms.m[i];
                     const node = doc.createNode(element.id);
+                    const rgba = this.toRGBAColor(Number.parseInt(sMesh.c));
                     node.setExtras({
                         'element_id': element.id
                     });
@@ -169,34 +174,14 @@ export default class GLTFImporter {
                             .createAccessor()
                             .setType('VEC4')
                             .setBuffer(buffer);
-                        const rgba = this.toRGBAColor(Number.parseInt(sMesh.c));
                         for (let i = 0; i < position.getCount(); i++) {
                             colors.push(rgba[0], rgba[1], rgba[2], rgba[3]);
                         }
                         colorAccessor.setArray(new Float32Array(colors));
                         primitive.setAttribute('COLOR', colorAccessor);
-                        const colorsSelected = [];
-                        const colorAccessorSelected = doc
-                            .createAccessor()
-                            .setType('VEC4')
-                            .setBuffer(buffer);
-                        for (let i = 0; i < position.getCount(); i++) {
-                            colorsSelected.push(rgba[0], rgba[1], rgba[2], rgba[3]);
-                        }
-                        colorAccessorSelected.setArray(new Float32Array(colorsSelected));
-                        primitive.setAttribute('COLOR_SELECTED', colorAccessorSelected);
-                        const element_ids = [];
-                        const elementIdsAccessor = doc
-                            .createAccessor()
-                            .setType('SCALAR')
-                            .setBuffer(buffer);
-                        for (let i = 0; i < position.getCount(); i++) {
-                            element_ids.push(Number(element.id));
-                        }
-                        elementIdsAccessor.setArray(new Float32Array(element_ids));
-                        primitive.setAttribute('ELEMENT_ID', elementIdsAccessor);
                     }
-
+                    mesh.setExtras({
+                    });
                     mesh.addPrimitive(primitive);
                     node.setMesh(mesh);
                     scene.addChild(node);

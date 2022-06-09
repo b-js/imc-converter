@@ -1,14 +1,12 @@
 import * as child_process from 'child_process';
-// @ts-ignore
-import {__files_dirname} from '../../files/dirname';
+
 const path = require('path');
-const dir = path.join(__files_dirname, 'output');
-const gltfpack = require('gltfpack');
-const fs = require('fs-extra');
+// const dir = path.join(path.resolve(),'files', 'output');
 
 export const compress = (filename: string) => {
     return new Promise((res, rej) => {
-        const ls = child_process.exec(`gltfpack -i ${dir}\\${filename} -o ${dir}\\${filename} -kn -ke -noq -c`);
+        // console.log(`gltfpack -i ${filename} -o ${filename} -kn -ke -noq -c`);
+        const ls = child_process.exec(`gltfpack -i ${filename} -o ${filename} -kn -ke -noq -c`);
         // ls.stdout.on("data", data => {
         //     console.log(`stdout: ${data}`);
         // });
